@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Birthday Date?</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #ffffff;
+            text-align: center;
+            /* no overflow:hidden so the No button can run off-edge */
+        }
+
+        #main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1;
+            padding: 20px;
+        }
+
+        #main-gif {
+            width: 280px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 10px 0;
+            color: #111;
+        }
+
+        #subtext {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        #button-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            min-height: 70px;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        #yes-btn {
+            background-color: #2ece6b;
+            color: white;
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            border-radius: 50px;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+        #yes-btn:hover { background-color: #25b85c; }
+
+        /* No button uses fixed positioning once it starts running */
+        #no-btn {
+            background-color: #ef4444;
+            color: white;
+            font-size: 1.2rem;
+            padding: 15px 30px;
+            border-radius: 50px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        #share-btn {
+            background-color: #58a6ff;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: none;
+            margin-top: 20px;
+        }
+        #share-btn:hover { background-color: #3b8de0; }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f3f4f6;
+            color: #4b5563;
+            padding: 15px 0;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        footer a { color: #4b5563; text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        <img id="main-gif" src="https://media.giphy.com/media/gHo1P7oxz7WtapcFNI/giphy.gif" alt="Cute GIF">
+
+        <h1 id="question">Will you be my Birthday Date? 🎂</h1>
+        <p id="subtext">March 1st wouldn't be the same without you!</p>
+
+        <div id="button-container">
+            <button id="yes-btn">Count me in!</button>
+            <button id="no-btn">No</button>
+        </div>
+
+        <button id="share-btn">Share Now ➡</button>
+    </div>
+
+    <footer>
+        © 2025 @yourfish_kmh. All rights reserved.
+        <a href="#">Privacy Policy</a>. Made with ❤️ by Fish_kmh
+    </footer>
+
+    <script>
+        // ==========================================
+        // 🛠️ EDIT THESE TO CUSTOMIZE
+        // ==========================================
+
+        // ✅ Working Pudgy Penguin GIFs from Giphy
+        const questionGif = "https://media.giphy.com/media/gHo1P7oxz7WtapcFNI/giphy.gif";
+        const successGif  = "https://media.giphy.com/media/nmYuapfnOxptMyieTF/giphy.gif";
+
+        // ✅ FIX: Removed "No" as first message — first click now shows real message
+        const noMessages = [
+            "Are you sure? It's My Big Day 🥺",
+            "I'm deleting my birthday from the calendar.",
+            "Please? 🥺",
+            "Don't do this to me!",
+            "My Birthday Wish Was Just To See U Ly 💕",
+            "Is it Because I'm Pisces (Fish Ly)?",
+            "Ek lo Pop",
+            "Pls, Cat Kalay",
+            ":((", 
+            "Still No?",
+            "Pls Pls Pls Cat Cat 🐱",
+            "Pls Count Me In pr tot 🙏"
+        ];
+
+        // ==========================================
+        // 🛑 DO NOT EDIT BELOW THIS LINE
+        // ==========================================
+
+        let noClickCount = 0;
+        let noIsFixed = false;
+
+        const mainGif   = document.getElementById("main-gif");
+        const question  = document.getElementById("question");
+        const subText   = document.getElementById("subtext");
+        const yesBtn    = document.getElementById("yes-btn");
+        const noBtn     = document.getElementById("no-btn");
+        const btnContainer = document.getElementById("button-container");
+        const shareBtn  = document.getElementById("share-btn");
+
+        // ── NO BUTTON: run away on click ──
+        noBtn.addEventListener("click", function () {
+
+            // Update message
+            if (noClickCount < noMessages.length) {
+                noBtn.innerText = noMessages[noClickCount];
+            } else {
+                noBtn.innerText = noMessages[noMessages.length - 1];
+            }
+            noClickCount++;
+
+            // On first click, lock button to fixed position so it can roam freely
+            if (!noIsFixed) {
+                const rect = noBtn.getBoundingClientRect();
+                noBtn.style.position  = 'fixed';
+                noBtn.style.left      = rect.left + 'px';
+                noBtn.style.top       = rect.top  + 'px';
+                noBtn.style.margin    = '0';
+                noBtn.style.zIndex    = '999';
+                noIsFixed = true;
+            }
+
+            // Shrink the button a little each click (min readable size)
+            const newSize = Math.max(10, 19 - noClickCount);
+            const newPadV = Math.max(6,  15 - noClickCount);
+            const newPadH = Math.max(12, 30 - noClickCount * 2);
+            noBtn.style.fontSize = newSize + 'px';
+            noBtn.style.padding  = `${newPadV}px ${newPadH}px`;
+
+            // Jump to a random spot, always staying inside the viewport
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const bw = noBtn.offsetWidth  || 80;
+            const bh = noBtn.offsetHeight || 40;
+
+            const newLeft = Math.max(0, Math.random() * (vw - bw));
+            const newTop  = Math.max(0, Math.random() * (vh - bh - 60)); // avoid footer
+
+            noBtn.style.transition = 'left .4s cubic-bezier(.34,1.56,.64,1), top .4s cubic-bezier(.34,1.56,.64,1), font-size .2s, padding .2s';
+            noBtn.style.left = newLeft + 'px';
+            noBtn.style.top  = newTop  + 'px';
+        });
+
+        // ── YES BUTTON ──
+        yesBtn.addEventListener("click", function () {
+            mainGif.src = successGif;
+            question.innerText = "YAY! Best birthday present ever!! See you then! ✨";
+            subText.style.display    = "none";
+            btnContainer.style.display = "none";
+            noBtn.style.display      = "none"; // hide the runaway button too
+            shareBtn.style.display   = "inline-block";
+        });
+
+        // ── SHARE BUTTON ──
+        shareBtn.addEventListener("click", function () {
+            if (navigator.share) {
+                navigator.share({ title: "Birthday Date Invite", url: location.href });
+            } else {
+                navigator.clipboard.writeText(location.href)
+                    .then(() => alert("✅ Link copied to clipboard!"));
+            }
+        });
+    </script>
+</body>
+</html>
